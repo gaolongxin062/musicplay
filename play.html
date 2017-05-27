@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+  <head>
+		<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <title>播放</title>
+		<link rel="stylesheet" type="text/css" href="css/weui.min.css"/>
+    <style type="text/css">
+      html,body {
+        height: 100%;
+        overflow: hidden;
+        background-image: url(images/bg.png)
+      }
+
+      header {
+        padding: 15px;
+        height: 5vh;
+        color: #ffffff;
+        font-weight: bold;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+      }
+
+      .header {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header .banben {
+        border: 2px solid #ffffff;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: normal;
+      }
+
+      section {
+        height: 75vh;
+        width: 100vw;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+      }
+
+      section img {
+        width: 50%;
+      }
+
+      footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 20vh;
+        background-color: #000000;
+        color: #ffffff;
+        opacity: 0.5;
+        padding: 15px;
+        overflow: hidden;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+      }
+
+      footer .time,footer .opration {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }
+
+      .time {
+        justify-content: space-between;
+      }
+      .opration {
+        margin: 10px 50px;
+        justify-content: center;
+      }
+
+
+
+      #scrollBar {
+        width: 70vw;
+        height: 10px;
+        background-color: #ccc;
+        margin: 0 15px;
+        /*margin-top: 50px;*/
+        -webkit-border-radius: 2em;
+        -moz-border-radius: 2em;
+        border-radius: 2em;
+        cursor: pointer;
+      }
+      #scroll_Track {
+        width: 0px;
+        height: 10px;
+        background-color: #ff4400;
+        -webkit-border-radius: 2em;
+        -moz-border-radius: 2em;
+        border-radius: 2em;
+      }
+      #scroll_Thumb {
+        height: 20px;
+        width: 20px;
+        background-color: #efefef;
+        -webkit-border-radius: 2em;
+        -moz-border-radius: 2em;
+        border-radius: 2em;
+        border: 1px solid #ccc;
+        -webkit-box-shadow: 0px 0px 5px #ccc;
+        -moz-box-shadow: 0px 0px 5px #ccc;
+        box-shadow: 0px 0px 5px #ccc;
+        position: absolute;
+        margin-top: -16px;
+        cursor: pointer;
+      }
+      #scroll_Thumb:hover {
+        background-color: #efefef;
+        border: 1px solid #fff;
+      }
+      #beian {
+        text-align: center;
+        float: left;
+        width: 100%;
+        margin-top: 50px
+      }
+      #beian a {
+        color: gray;
+        font: 13px "微软雅黑", Arial, Helvetica, sans-serif;
+      }
+    </style>
+
+		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+		<script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+		<script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+  </head>
+  <body>
+    <audio id="audioPlay" src="http://so1.111ttt.com:8282/2017/1/05m/09/298092042172.m4a?tflag=1495879453&pin=11a663487f44a0c780db71eae886aee6&ip=111.200.55.243#.mp3">
+      亲 您的浏览器不支持html5的audio标签
+    </audio>
+
+    <header>
+      <div class="header">
+        <div>
+          B3U1听写检测卷
+        </div>
+        <div class="banben">
+          人教版
+        </div>
+      </div>
+    </header>
+    <section>
+      <img src="images/cidai.gif" />
+    </section>
+    <footer>
+      <div class="time">
+        <span style="width:15vw; text-align:center;" id="playTime">00:00</span>
+        <div id="scrollBar">
+          <div id="scroll_Track"></div>
+          <div id="scroll_Thumb"></div>
+        </div>
+        <span style="width:15vw; text-align:center;" id="leaveTime">00:00</span>
+      </div>
+      <div class="opration">
+        <!--<a href="javascript:;">
+          <img src="images/pre.png" style="width:25px;" />
+        </a>-->
+        <a href="javascript:;" id="btnPlay">
+          <img src="images/play.png" style="width:50px;" />
+        </a>
+        <!--<a href="javascript:;">
+          <img src="images/next.png" style="width:25px;" />
+        </a>-->
+      </div>
+    </footer>
+
+
+  	<script src="//code.jquery.com/jquery-latest.min.js"></script>
+    <script type="text/javascript">
+        var audio_play = document.getElementById('audioPlay');
+        $(document).ready(function (e) {            
+          audio_play.addEventListener('canplay', function () {
+            if ($('#playTime').html() === '00:00' && $('#leaveTime').html() === '00:00') {
+              var total_time = this.duration;
+              //设置最大值
+              ScrollBar.maxValue = total_time;
+              $('#leaveTime').html(String(Math.floor(total_time / 60)).padStart(2,'0') + ':' + String(Math.ceil(total_time % 60)).padStart(2,'0'));
+            }
+          });
+
+          //初始化
+          ScrollBar.Initialize();
+
+          $('#btnPlay').click(function () {
+            if ($('#btnPlay img').attr('src') == 'images/play.png') {
+              audio_play.play();
+              ScrollBar.Start();
+
+              $('#btnPlay img').attr('src', 'images/pause.png');
+            } else {
+              audio_play.pause();
+              ScrollBar.Pause();
+              $('#btnPlay img').attr('src', 'images/play.png');
+            }
+          });
+        });
+        var ScrollBar = {
+          value: 0,
+          maxValue: 100,
+          step: 1,
+          currentX: 0,
+          timeIndex: 0,
+          isJump: 0,
+          Initialize: function () {
+            if (this.value > this.maxValue) {
+                alert("给定当前值大于了最大值");
+                return;
+            }
+            this.GetValue();
+            this.Value();
+          },
+          Start: function () {  
+            var that = this;
+            that.timeIndex = setInterval(function () {  
+              if (that.currentX >= that.maxValue) {
+                clearInterval(that.timeIndex);
+                $('#btnPlay img').attr('src', 'images/play.png');
+                that.currentX = 0;
+              }
+              that.SetValue();
+              that.currentX = that.currentX + that.step;
+            }, 1000);
+          },
+          Pause: function () { 
+            clearInterval(this.timeIndex);
+          },
+          Value: function () {
+            var currentValue,
+                that = this,
+                scrollBar = document.getElementById('scrollBar');
+
+            scrollBar.addEventListener('touchstart', function (event) { 
+              that.currentX = ((event.targetTouches[0].clientX - scrollBar.offsetLeft)*that.maxValue)/scrollBar.offsetWidth;
+              that.isJump = 1;
+              that.SetValue();
+            });
+
+            scrollBar.addEventListener('touchmove', function (event) {  
+              that.currentX = ((event.targetTouches[0].clientX - scrollBar.offsetLeft)*that.maxValue)/scrollBar.offsetWidth;
+              that.isJump = 1;
+              that.SetValue();
+            });
+          },
+          GetValue: function () {
+              this.currentX = document.getElementById("scrollBar").offsetWidth * (this.value / this.maxValue);
+          },
+          SetValue: function () {  
+            var scrollBar = document.getElementById('scrollBar'),
+                thumb = document.getElementById('scroll_Thumb'),
+                track = document.getElementById('scroll_Track'),
+                currentValue = (this.currentX * scrollBar.offsetWidth)/this.maxValue;
+                
+            if (currentValue < 0) {
+              currentValue = 0;
+            }
+            if (currentValue > scrollBar.offsetWidth) {
+              currentValue = scrollBar.offsetWidth;
+            }
+
+            thumb.style.marginLeft = currentValue - thumb.offsetWidth/2 + 'px';
+            track.style.width = currentValue + 'px';
+
+            //设置播放器
+            if (this.isJump === 1) {
+              audio_play.currentTime = this.currentX;
+              this.isJump = 0;
+            }
+            var play_time,leave_time;
+            if (this.currentX >= this.maxValue) {
+              play_time = String(Math.floor(this.maxValue / 60)).padStart(2,'0') + ':' + 
+                String(Math.floor(Math.ceil(this.maxValue % 60))).padStart(2,'0');
+              leave_time = '00:00';
+            } else {
+              play_time = String(Math.floor(this.currentX / 60)).padStart(2,'0') + ':' + 
+                String(Math.floor(this.currentX % 60)).padStart(2,'0');
+              leave_time = String(Math.floor((this.maxValue - this.currentX) / 60)).padStart(2,'0') + ':' + 
+                String(Math.floor(Math.ceil((this.maxValue - this.currentX) % 60))).padStart(2,'0');
+            }
+
+            $('#playTime').html(play_time);
+            $('#leaveTime').html(leave_time);
+          }
+        }
+    </script>
+  </body>
+</html>
